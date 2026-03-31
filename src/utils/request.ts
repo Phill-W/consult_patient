@@ -1,16 +1,17 @@
+import router from '@/router'
 import { useUserStore } from '@/stores'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { showToast } from 'vant'
 // 创建axios实例
 const instance = axios.create({
-  // TODO 1. 基础地址，超时时间
+  // 1. 基础地址，超时时间
   baseURL: 'https://consult-api.itheima.net',
   timeout: 10000
 })
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    // TODO 2. 携带token
+    //2. 携带token
     const store = useUserStore()
     if (store.user?.token && config.headers) {
       config.headers.Authorization = `Bearer ${store.user.token}`
@@ -22,7 +23,7 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (res) => {
-    // TODO 3. 处理业务失败
+    //3. 处理业务失败
     if (res.data?.code !== 10000) {
       //错误提示
       showToast(res.data.message || '请求失败')
@@ -30,11 +31,22 @@ instance.interceptors.response.use(
       return Promise.reject(res.data)
       //传入 code将来catch中可以拿到
     }
-    // TODO 4. 摘取核心响应数据
+    //4. 摘取核心响应数据
     return res.data
   },
-  (err) => {
+  (err: AxiosError) => {
     // TODO 5. 处理401错误
+
+    if (err.response?.status === 401) {
+      // 清除本地用户信息
+      const store = useUserStore()
+      store.delUser()
+      //跳转到登录页，携带当前访问页面地址
+      router.push({
+        path: '/login',
+        query: { returnUrl: router.currentRoute.value.fullPath }
+      })
+    }
     return Promise.reject(err)
   }
 )
