@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { Button as VanButton } from 'vant'
+import { useUserStore } from './stores/user'
+const useStore = useUserStore()
 </script>
 
 <template>
-  <div>APP<VanButton type="primary">按钮</VanButton></div>
-  <div class="main">main</div>
-  <div class="footer">footer</div>
+  <div>
+    {{ useStore.user }}
+    <VanButton
+      type="primary"
+      @click="
+        useStore.setUser({
+          id: '1',
+          avatar: '1',
+          token: '1',
+          mobile: '1',
+          account: '1'
+        })
+      "
+      >登录</VanButton
+    >
+    <VanButton type="primary" @click="useStore.delUser()">退出</VanButton>
+  </div>
 </template>
-
-<style scoped lang="scss">
-.main {
-  color: var(--cp-primary);
-  background-color: var(--footer-color);
-}
-.footer {
-  color: var(--footer-color);
-  background-color: var(--footer-color);
-}
-</style>
