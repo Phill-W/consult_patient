@@ -3,9 +3,18 @@ import { Button as VanButton } from 'vant'
 </script>
 
 <template>
-  <div>
-    <VanButton type="primary">按钮</VanButton>
-  </div>
+  <div>APP<VanButton type="primary">按钮</VanButton></div>
+  <div class="main">main</div>
+  <div class="footer">footer</div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.main {
+  color: var(--cp-primary);
+  background-color: var(--footer-color);
+}
+.footer {
+  color: var(--footer-color);
+  background-color: var(--footer-color);
+}
+</style>
