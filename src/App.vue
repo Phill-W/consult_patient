@@ -9,6 +9,24 @@ const getUser = () => {
     method: 'get'
   })
 }
+// 测试登录
+const login = () => {
+  axios
+    .request({
+      url: 'login/password',
+      method: 'post',
+      data: {
+        mobile: '13211112222',
+        password: 'abc12345'
+      }
+    })
+    .then((res) => {
+      console.log('登录成功', res)
+    })
+    .catch((err) => {
+      console.log('登录失败', err)
+    })
+}
 </script>
 
 <template>
@@ -28,6 +46,7 @@ const getUser = () => {
       >登录</VanButton
     >
     <VanButton type="primary" @click="useStore.delUser()">退出</VanButton>
-    <VanButton type="primary" @click="getUser()">获取用户信息</VanButton>
+    <VanButton type="primary" @click="getUser">获取用户信息</VanButton>
+    <VanButton type="primary" @click="login">接口登录</VanButton>
   </div>
 </template>
