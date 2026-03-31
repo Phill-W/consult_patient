@@ -1,8 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Button as VanButton } from 'vant'
+</script>
 
 <template>
-  <div class="app">
-    <h1>Consult New</h1>
+  <div>
+    <VanButton type="primary">按钮</VanButton>
   </div>
 </template>
 
