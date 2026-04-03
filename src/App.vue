@@ -1,10 +1,6 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="app">
-    <!-- 一级路由出口 -->
-    <router-view />
-  </div>
+  <router-view />
 </template>
-
 <style lang="scss" scoped></style>
