@@ -1,4 +1,3 @@
-import type { User } from '@/types/user'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

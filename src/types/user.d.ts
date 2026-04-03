@@ -1,5 +1,5 @@
 // 用户信息
-export type User = {
+type User = {
   /** token令牌 */
   token: string
   /** 用户ID */
