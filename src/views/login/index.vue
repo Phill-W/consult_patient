@@ -1,10 +1,6 @@
 <script setup lang="ts"></script>
-
 <template>
-  <div class="app">
-    <!-- 一级路由出口 -->
-    <router-view />
-  </div>
+  <div class="login-page">我是登录页</div>
 </template>
 
 <style lang="scss" scoped></style>

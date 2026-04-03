@@ -52,11 +52,19 @@ instance.interceptors.response.use(
 )
 
 export default instance
-
-export const requset = (url: string, method: Method, submitData?: object) => {
-  return instance.request({
+type Data<T> = {
+  code: number
+  message: string
+  data: T
+}
+export const request = <T>(
+  url: string,
+  method: Method,
+  submitData?: object
+) => {
+  return instance.request<T, Data<T>>({
     url,
     method,
-    [method.toUpperCase() === 'Get' ? 'params' : 'data']: submitData
+    [method.toUpperCase() === 'G' ? 'params' : 'data']: submitData
   })
 }
