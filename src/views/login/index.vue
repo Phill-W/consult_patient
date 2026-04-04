@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
-import { showSuccessToast, showToast } from 'vant'
-import { loginByPassword } from '@/service/user'
+import { showSuccessToast, showToast, type FormInstance } from 'vant'
+import { loginByPassword, sendMobileCode } from '@/service/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
 const mobile = ref('')
@@ -25,6 +25,29 @@ const onSubmit = async () => {
 // 短信登录界面切换
 const isPass = ref(true)
 const code = ref('')
+
+//发送验证码
+const time = ref(0)
+const form = ref<FormInstance>()
+let timer: number
+const onSend = async () => {
+  // 验证： 倒计时 手机号
+  if (time.value > 0) return
+  await form.value?.validate('mobile')
+  await sendMobileCode(mobile.value, 'login')
+  showToast('发送成功')
+  time.value = 60
+  //开启定时器
+  if (timer) clearInterval(timer)
+  timer = setInterval(() => {
+    time.value--
+    if (time.value <= 0) clearInterval(timer)
+  }, 1000)
+}
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
 
 <template>
@@ -38,14 +61,15 @@ const code = ref('')
       <h3>{{ isPass ? '密码登录' : '短信验证码登录 ' }}</h3>
       <a href="javascript:;">
         <span @click="isPass = !isPass">{{
-          isPass ? '密码登录' : '短信验证码登录 '
+          isPass ? '短信验证码登录' : '密码登录 '
         }}</span>
         <van-icon name="arrow"></van-icon>
       </a>
     </div>
     <!-- 表单 -->
-    <van-form autocomplete="off" @submit="onSubmit">
+    <van-form autocomplete="off" @submit="onSubmit" ref="form">
       <van-field
+        name="mobile"
         v-model="mobile"
         placeholder="请输入手机号"
         type="tel"
@@ -65,7 +89,12 @@ const code = ref('')
         :rules="codeRules"
       >
         <template #button>
-          <span class="btn-send">发送验证码</span>
+          <span
+            class="btn-send"
+            @click="onSend"
+            :class="{ active: time > 0 }"
+            >{{ time > 0 ? `${time}后再次发送` : '发送验证码' }}</span
+          >
         </template>
       </van-field>
       <div class="cp-cell">

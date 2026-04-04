@@ -59,12 +59,12 @@ type Data<T> = {
 }
 export const request = <T>(
   url: string,
-  method: Method,
+  method: Method = 'GET',
   submitData?: object
 ) => {
   return instance.request<T, Data<T>>({
     url,
     method,
-    [method.toUpperCase() === 'G' ? 'params' : 'data']: submitData
+    [method.toUpperCase() === 'GET' ? 'params' : 'data']: submitData
   })
 }
