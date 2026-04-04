@@ -9,6 +9,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from 'unplugin-vue-components/resolvers'
 
+// svg插件
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import path from 'path'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -18,6 +22,10 @@ export default defineConfig({
     Components({
       dts: false, // 禁用生成 .d.ts 文件
       resolvers: [VantResolver({ importStyle: false })]
+    }),
+    createSvgIconsPlugin({
+      // 指定需要缓存的图标文件夹
+      iconDirs: [path.resolve(process.cwd(), 'src/icons')]
     })
   ],
   base: './',
