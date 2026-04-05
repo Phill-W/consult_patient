@@ -13,3 +13,6 @@ export const sendMobileCode = (mobile: string, type: CodeType) =>
 //短信登录
 export const loginByMobile = (mobile: string, code: string) =>
   request<User>('login', 'POST', { mobile, code })
+
+//获取用户信息
+export const getUserInfo = () => request<UserInfo>('patient/myUser')
