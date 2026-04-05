@@ -1,5 +1,9 @@
 import { useUserStore } from '@/stores'
 import { createRouter, createWebHistory } from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+NProgress.configure({ showSpinner: false })
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +45,7 @@ const router = createRouter({
 
 //全局的前置导航
 router.beforeEach((to) => {
+  NProgress.start()
   const store = useUserStore()
   const whiteList = ['/login']
   if (!store.user?.token && !whiteList.includes(to.path)) return '/login'
@@ -49,5 +54,6 @@ router.beforeEach((to) => {
 //全局的后置导航
 router.afterEach((to) => {
   document.title = `${to.meta.title || ''}-优医问诊`
+  NProgress.done()
 })
 export default router
