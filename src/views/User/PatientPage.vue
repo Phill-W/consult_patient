@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getPatientList } from '@/service/user'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const list = ref<PatientList>([])
 const loadList = async () => {
@@ -19,8 +19,26 @@ const options: { label: string; value: number }[] = [
 
 const show = ref(false)
 const showPopup = () => {
+  patient.value = { ...initPatient }
   show.value = !show.value
 }
+const initPatient: Patient = {
+  name: '',
+  idCard: '',
+  gender: 1,
+  defaultFlag: 0
+}
+const patient = ref<Patient>({ ...initPatient })
+
+// 默认值需要转换
+const defaultFlag = computed({
+  get() {
+    return patient.value.defaultFlag === 1 ? true : false
+  },
+  set(value) {
+    patient.value.defaultFlag = value ? 1 : 0
+  }
+})
 </script>
 
 <template>
@@ -48,23 +66,33 @@ const showPopup = () => {
     <!-- 使用popup组件 -->
     <van-popup position="right" v-model:show="show">
       <cp-nav-bar
-        ()
-        title="添加患者"
+        :title="patient.id ? '编辑患者' : '添加患者'"
         right-text="保存"
         :back="() => (show = false)"
       ></cp-nav-bar>
       <van-form autocomplete="off" ref="form">
-        <van-field label="真实姓名" placeholder="请输入真实姓名" />
-        <van-field label="身份证号" placeholder="请输入身份证号" />
+        <van-field
+          v-model="patient.name"
+          label="真实姓名"
+          placeholder="请输入真实姓名"
+        />
+        <van-field
+          v-model="patient.idCard"
+          label="身份证号"
+          placeholder="请输入身份证号"
+        />
         <van-field label="性别" class="pb4">
           <!-- 单选按钮组件 -->
           <template #input>
-            <cp-radio-btn :options="options"></cp-radio-btn>
+            <cp-radio-btn
+              v-model="patient.gender"
+              :options="options"
+            ></cp-radio-btn>
           </template>
         </van-field>
         <van-field label="默认就诊人">
           <template #input>
-            <van-checkbox :icon-size="18" round />
+            <van-checkbox v-model="defaultFlag" :icon-size="18" round />
           </template>
         </van-field>
       </van-form>
@@ -77,8 +105,10 @@ const showPopup = () => {
   padding: 46px 0 80px;
   :deep() {
     .van-popup {
-      width: 80%;
+      width: 100%;
       height: 100%;
+      padding-top: 46px;
+      box-sizing: border-box;
     }
   }
 }
