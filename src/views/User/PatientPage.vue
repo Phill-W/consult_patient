@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addPatient, getPatientList } from '@/service/user'
+import { editPatient, addPatient, getPatientList } from '@/service/user'
 import { ref, onMounted, computed } from 'vue'
 import { nameRules, idCardRules } from '@/utils/rules'
 import { showSuccessToast, showConfirmDialog, type FormInstance } from 'vant'
@@ -12,15 +12,19 @@ onMounted(() => {
   loadList()
 })
 
-//控制popup
 const options: { label: string; value: number }[] = [
   { label: '男', value: 1 },
   { label: '女', value: 0 }
 ]
-
+//控制popup
 const show = ref(false)
-const showPopup = () => {
-  patient.value = { ...initPatient }
+const showPopup = (item?: Patient) => {
+  if (item) {
+    const { id, name, idCard, gender, defaultFlag } = item
+    patient.value = { id, name, idCard, gender, defaultFlag }
+  } else {
+    patient.value = { ...initPatient }
+  }
   show.value = !show.value
 }
 const initPatient: Patient = {
@@ -55,12 +59,16 @@ const onSubmit = async () => {
       message: '身份证信息与选择的性别不符\n您是否继续？'
     })
   }
-  //提交即可
-  await addPatient(patient.value)
-  // 成功：关闭添加患者界面，加载患者列表，成功提示
+  //提交即可 添加或者编辑
+  // 添加 & 修改
+  if (patient.value.id) {
+    await editPatient(patient.value)
+  } else {
+    await addPatient(patient.value)
+  }
   show.value = false
   loadList()
-  showSuccessToast('添加成功')
+  showSuccessToast(patient.value.id ? '编辑成功' : '添加成功')
 }
 </script>
 
@@ -77,10 +85,12 @@ const onSubmit = async () => {
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}</span>
         </div>
-        <div class="icon"><cp-icon name="user-edit" /></div>
+        <div class="icon" @click="showPopup(item)">
+          <cp-icon name="user-edit" />
+        </div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
-      <div class="patient-add" v-if="list.length < 6" @click="showPopup">
+      <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
