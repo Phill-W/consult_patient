@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import type { KnowledgeType } from '@/types/consult'
 import KnowledgeCard from './KnowledgeCard.vue'
 import { ref } from 'vue'
 
+defineProps<{
+  type: KnowledgeType
+}>()
+//数据列表
 const list = ref<number[]>([])
+//加载中状态
 const loading = ref(false)
+//是否完全加载完毕数据
 const finished = ref(false)
 
 const onLoad = () => {
