@@ -42,3 +42,9 @@ const onLoad = async () => {
     </van-list>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.knowledge-list {
+  padding: 0 15px;
+}
+</style>
