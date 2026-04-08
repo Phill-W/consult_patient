@@ -96,3 +96,41 @@ type DoctorPage = {
 
 // 关注的目标类型
 type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
+
+import { ConsultType, IllnessTime } from '@/enums'
+
+// 图片列表
+type Image = {
+  /** 图片ID */
+  id: string
+  /** 图片地址 */
+  url: string
+}
+// 问诊记录
+type Consult = {
+  /** 问诊记录ID */
+  id: string
+  /** 问诊类型 */
+  type: ConsultType
+  /** 快速问诊类型，0 普通 1 三甲 */
+  illnessType: 0 | 1
+  /** 科室ID */
+  depId: string
+  /** 疾病描述 */
+  illnessDesc: string
+  /** 疾病持续时间 */
+  illnessTime: IllnessTime
+  /** 是否就诊过，0 未就诊过  1 就诊过 */
+  consultFlag: 0 | 1
+  /** 图片数组 */
+  pictures: Image[]
+  /** 患者ID */
+  patientId: string
+  /** 优惠券ID */
+  couponId: string
+}
+
+// Partial<T> 把一个对象属性转换为可选
+type PartialConsult = Partial<Consult>
+// Required<T> 把一个对象属性转换为必填
+// type RequiredConsult = Required<Consult>
