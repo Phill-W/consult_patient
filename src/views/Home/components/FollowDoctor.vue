@@ -3,6 +3,7 @@ import { getDoctorPage } from '@/service/consult'
 import DoctorCard from './DoctorCard.vue'
 import { useWindowSize } from '@vueuse/core'
 import { onMounted, ref } from 'vue'
+import type { DoctorList } from '@/types/consult'
 
 const { width } = useWindowSize()
 // import { onMounted, ref, onUnmounted } from 'vue'

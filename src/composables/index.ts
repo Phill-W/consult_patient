@@ -1,6 +1,6 @@
 import { followOrUnfollow } from '@/service/consult'
 import { ref } from 'vue'
-
+import type { FollowType } from '@/types/consult'
 //vue3概念：组合式API，组合式函数（composable） useXxx
 //composable
 export const useFollow = (type: FollowType = 'doc') => {

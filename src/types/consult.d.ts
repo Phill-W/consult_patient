@@ -1,5 +1,8 @@
+import type { ConsultType, IllnessTime, OrderType } from '@/enums'
+import type { Patient } from './user'
+
 // 文章信息类型
-type Knowledge = {
+export type Knowledge = {
   id: string
   /** 标题 */
   title: string
@@ -30,34 +33,30 @@ type Knowledge = {
 }
 
 // 文章列表
-type KnowledgeList = Knowledge[]
+export type KnowledgeList = Knowledge[]
 
 // 文章列表带分页
-type KnowledgePage = {
+export type KnowledgePage = {
   pageTotal: number
   total: number
   rows: KnowledgeList
 }
 
 // props类型 recommend推荐，fatReduction减脂，food健康饮食，like关注医生页面文章
-type KnowledgeType = 'like' | 'recommend' | 'fatReduction' | 'food'
+export type KnowledgeType = 'like' | 'recommend' | 'fatReduction' | 'food'
 
-// 通用的分页查询参数
-type PageParams = {
-  /** 当前页码 */
+export type PageParams = {
   current: number
-  /** 每页条数 */
   pageSize: number
 }
 
 // 文章列表查询参数
-type KnowledgeParams = PageParams & {
-  /** 文章类型 */
+export type KnowledgeParams = PageParams & {
   type: KnowledgeType
 }
 
 // 医生卡片对象
-type Doctor = {
+export type Doctor = {
   /** 医生ID */
   id: string
   /** 医生名称 */
@@ -85,29 +84,27 @@ type Doctor = {
 }
 
 // 医生列表
-type DoctorList = Doctor[]
+export type DoctorList = Doctor[]
 
 // 医生分页
-type DoctorPage = {
+export type DoctorPage = {
   pageTotal: number
   total: number
   rows: DoctorList
 }
 
-// 关注的目标类型
-type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
-
-import { ConsultType, IllnessTime } from '@/enums'
+// 关注的目标类型：topic百科话题,knowledge百科文章,doc医生,disease疾病
+export type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
 
 // 图片列表
-type Image = {
+export type Image = {
   /** 图片ID */
   id: string
   /** 图片地址 */
   url: string
 }
 // 问诊记录
-type Consult = {
+export type Consult = {
   /** 问诊记录ID */
   id: string
   /** 问诊类型 */
@@ -130,7 +127,7 @@ type Consult = {
   couponId: string
 }
 
-// Partial<T> 把一个对象属性转换为可选
+// Partial<T> 把一个对象的属性转换成可选
 type PartialConsult = Partial<Consult>
-// Required<T> 把一个对象属性转换为必填
-// type RequiredConsult = Required<Consult>
+// Required<T> 把一个对象的属性转换成必选
+// type RequiredConsult = Required<PartialConsult>

@@ -1,5 +1,11 @@
 import { request } from '@/utils/request'
-
+import type {
+  KnowledgePage,
+  KnowledgeParams,
+  PageParams,
+  DoctorPage,
+  FollowType
+} from '@/types/consult'
 export const getKnowledgePage = (params: KnowledgeParams) =>
   request<KnowledgePage>('/patient/home/knowledge', 'GET', params)
 
