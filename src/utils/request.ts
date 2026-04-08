@@ -62,7 +62,7 @@ export const request = <T>(
   method: Method = 'GET',
   submitData?: object
 ) => {
-  return instance.request<T, Data<T>>({
+  return instance.request<unknown, Data<T>>({
     url,
     method,
     [method.toUpperCase() === 'GET' ? 'params' : 'data']: submitData

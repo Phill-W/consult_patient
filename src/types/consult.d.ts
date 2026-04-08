@@ -40,10 +40,10 @@ type KnowledgePage = {
 }
 
 // props类型 recommend推荐，fatReduction减脂，food健康饮食，like关注医生页面文章
-export type KnowledgeType = 'like' | 'recommend' | 'fatReduction' | 'food'
+type KnowledgeType = 'like' | 'recommend' | 'fatReduction' | 'food'
 
 // 文章列表查询参数
-export type KnowledgeParams = {
+type KnowledgeParams = {
   type: KnowledgeType
   current: number
   pageSize: number
