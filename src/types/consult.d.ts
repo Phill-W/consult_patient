@@ -93,3 +93,6 @@ type DoctorPage = {
   total: number
   rows: DoctorList
 }
+
+// 关注的目标类型
+type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
