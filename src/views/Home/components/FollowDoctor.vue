@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { getDoctorPage } from '@/service/consult'
 import DoctorCard from './DoctorCard.vue'
 import { useWindowSize } from '@vueuse/core'
+import { onMounted, ref } from 'vue'
+
 const { width } = useWindowSize()
 // import { onMounted, ref, onUnmounted } from 'vue'
 // const width = ref(0)
@@ -14,6 +17,14 @@ const { width } = useWindowSize()
 // onUnmounted(() => {
 //   window.removeEventListener('resize', setWidth)
 // })
+const list = ref<DoctorList>([])
+const loadData = async () => {
+  const res = await getDoctorPage({ current: 1, pageSize: 5 })
+  list.value = res.data.rows
+}
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <template>
@@ -29,8 +40,8 @@ const { width } = useWindowSize()
         :showIndicators="false"
         :loop="false"
       >
-        <van-swipe-item v-for="item in 5" :key="item">
-          <doctor-card />
+        <van-swipe-item v-for="item in list" :key="item.id">
+          <doctor-card :item="item" />
         </van-swipe-item>
       </van-swipe>
     </div>
