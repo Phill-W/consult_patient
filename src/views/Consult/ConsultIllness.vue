@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import CpRadioBtn from '@/components/CpRadioBtn.vue'
 import { IllnessTime } from '@/enums'
-import type { ConsultIllness } from '@/types/consult'
+import type { Image, ConsultIllness } from '@/types/consult'
 import { uploadImage } from '@/service/consult'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import {
+  showConfirmDialog,
   showToast,
   type UploaderAfterRead,
   type UploaderFileListItem
@@ -30,7 +31,7 @@ const form = ref<ConsultIllness>({
   pictures: []
 })
 //图片收集
-const fileList = ref([])
+const fileList = ref<Image[]>([])
 const onAfterRead: UploaderAfterRead = (item) => {
   //上传图片
   if (Array.isArray(item)) return
@@ -75,6 +76,26 @@ const next = () => {
   //跳转携带标识
   router.push('/user/patient?isChanged=1')
 }
+
+// 数据回显
+onMounted(() => {
+  if (store.consult.illnessDesc) {
+    showConfirmDialog({
+      title: '温馨提示',
+      message: '是否加载上次编辑的病情信息？',
+      closeOnPopstate: false
+    }).then(() => {
+      const { illnessDesc, illnessTime, consultFlag, pictures } = store.consult
+      form.value = {
+        illnessDesc: illnessDesc || '',
+        illnessTime,
+        consultFlag,
+        pictures: pictures
+      }
+      fileList.value = pictures || []
+    })
+  }
+})
 </script>
 
 <template>
