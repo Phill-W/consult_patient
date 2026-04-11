@@ -2,7 +2,9 @@
 import CpRadioBtn from '@/components/CpRadioBtn.vue'
 import { IllnessTime } from '@/enums'
 import type { ConsultIllness } from '@/types/consult'
+import { uploadImage } from '@/service/consult'
 import { ref } from 'vue'
+import type { UploaderAfterRead, UploaderFileListItem } from 'vant'
 const timeOptions = [
   { label: '一周内', value: IllnessTime.Week },
   { label: '一月内', value: IllnessTime.Month },
@@ -23,11 +25,30 @@ const form = ref<ConsultIllness>({
 })
 //图片收集
 const fileList = ref([])
-const onAfterRead = () => {
-  //TODO 上传图片
+const onAfterRead: UploaderAfterRead = (item) => {
+  //上传图片
+  if (Array.isArray(item)) return
+  if (!item.file) return
+
+  item.status = 'uploading'
+  item.message = '上传中...'
+  uploadImage(item.file)
+    .then((res) => {
+      item.status = 'done'
+      item.message = undefined
+      item.url = res.data.url
+      //同步数据
+      form.value.pictures?.push(res.data)
+    })
+    .catch(() => {
+      item.status = 'failed'
+      item.message = '上传失败'
+    })
 }
-const onDeleteImg = () => {
-  //TODO 删除图片
+const onDeleteImg = (item: UploaderFileListItem) => {
+  form.value.pictures = form.value.pictures?.filter(
+    (pic) => pic.url !== item.url
+  )
 }
 </script>
 

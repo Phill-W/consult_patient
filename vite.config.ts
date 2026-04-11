@@ -28,7 +28,7 @@ export default defineConfig({
       iconDirs: [path.resolve(process.cwd(), 'src/icons')]
     })
   ],
-  base: './',
+  // base: './',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
