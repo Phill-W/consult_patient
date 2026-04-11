@@ -3,8 +3,14 @@ import CpRadioBtn from '@/components/CpRadioBtn.vue'
 import { IllnessTime } from '@/enums'
 import type { ConsultIllness } from '@/types/consult'
 import { uploadImage } from '@/service/consult'
-import { ref } from 'vue'
-import type { UploaderAfterRead, UploaderFileListItem } from 'vant'
+import { computed, ref } from 'vue'
+import {
+  showToast,
+  type UploaderAfterRead,
+  type UploaderFileListItem
+} from 'vant'
+import { useConsultStore } from '@/stores'
+import { useRouter } from 'vue-router'
 const timeOptions = [
   { label: '一周内', value: IllnessTime.Week },
   { label: '一月内', value: IllnessTime.Month },
@@ -49,6 +55,25 @@ const onDeleteImg = (item: UploaderFileListItem) => {
   form.value.pictures = form.value.pictures?.filter(
     (pic) => pic.url !== item.url
   )
+}
+
+const disabled = computed(
+  () =>
+    !form.value.illnessDesc ||
+    form.value.illnessTime === undefined ||
+    form.value.consultFlag === undefined
+)
+const store = useConsultStore()
+const router = useRouter()
+const next = () => {
+  if (!form.value.illnessDesc) return showToast('请描述病情')
+  if (form.value.illnessTime === undefined)
+    return showToast('请选择症状的持续时间')
+  if (form.value.consultFlag === undefined) return showToast('请选择是否就诊过')
+  // 记录病情
+  store.setIllness(form.value)
+  //跳转携带标识
+  router.push('/user/patient?isChanged=1')
 }
 </script>
 
@@ -106,6 +131,15 @@ const onDeleteImg = (item: UploaderFileListItem) => {
           上传内容仅医生可见，最多九张图。最大5MB
         </p>
       </div>
+      <van-button
+        :class="{ disabled }"
+        @click="next"
+        type="primary"
+        block
+        round
+      >
+        下一步
+      </van-button>
     </div>
   </div>
 </template>
@@ -200,6 +234,16 @@ const onDeleteImg = (item: UploaderFileListItem) => {
         color: var(--cp-text3);
       }
     }
+  }
+}
+.van-button {
+  font-size: 16px;
+  margin-bottom: 30px;
+  &.disabled {
+    opacity: 1;
+    background: #fafafa;
+    color: #d9dbde;
+    border: #fafafa;
   }
 }
 </style>
