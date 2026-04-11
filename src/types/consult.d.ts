@@ -141,3 +141,8 @@ type SubDep = {
 type TopDep = SubDep & {
   child: SubDep[]
 }
+
+type ConsultIllness = Pick<
+  PartialConsult,
+  'illnessDesc' | 'illnessTime' | 'consultFlag' | 'pictures'
+>
