@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import CpRadioBtn from '@/components/CpRadioBtn.vue'
-import { IllnessTime } from '@/enums'
 import type { Image, ConsultIllness } from '@/types/consult'
 import { uploadImage } from '@/service/consult'
 import { computed, ref, onMounted } from 'vue'
+import { timeOptions, flagOptions } from '@/service/constants'
 import {
   showConfirmDialog,
   showToast,
@@ -12,17 +12,7 @@ import {
 } from 'vant'
 import { useConsultStore } from '@/stores'
 import { useRouter } from 'vue-router'
-const timeOptions = [
-  { label: '一周内', value: IllnessTime.Week },
-  { label: '一月内', value: IllnessTime.Month },
-  { label: '半年内', value: IllnessTime.HalfYear },
-  { label: '半年以上', value: IllnessTime.Year }
-]
 
-const flagOptions = [
-  { label: '就诊过', value: 1 },
-  { label: '没就诊过', value: 0 }
-]
 // 病情描述
 const form = ref<ConsultIllness>({
   illnessDesc: '',
