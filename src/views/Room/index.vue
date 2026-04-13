@@ -2,21 +2,40 @@
 import RoomStatus from './components/RoomStatus.vue'
 import RoomAction from './components/RoomAction.vue'
 import RoomMessage from './components/RoomMessage.vue'
-import io from 'socket.io-client'
+import io, { Socket } from 'socket.io-client'
+import { onMounted, onUnmounted } from 'vue'
+import { baseURL } from '@/utils/request'
+import { useUserStore } from '@/stores'
+import { useRoute } from 'vue-router'
 
-const socket = io('http://localhost:3000')
-socket.on('connect', () => {
-  console.log('连接成功')
-  //发送消息
-  socket.emit('chat message', '你好 socket.io')
+const store = useUserStore()
+const route = useRoute()
+
+let socket: Socket
+onMounted(() => {
+  // 建立链接，创建 socket.io 实例
+  socket = io(baseURL, {
+    auth: {
+      token: `Bearer ${store.user?.token}`
+    },
+    query: {
+      orderId: route.query.orderId
+    }
+  })
+  socket.on('connect', () => {
+    console.log('连接成功')
+  })
+  socket.on('disconnect', () => {
+    // 已经断开连接
+    console.log('连接关闭')
+  })
+  socket.on('error', (err) => {
+    console.log('发生错误', err)
+  })
 })
 
-socket.on('chat message', (msg) => {
-  console.log(msg)
+onUnmounted(() => {
   socket.close()
-})
-socket.on('disconnect', () => {
-  console.log('连接关闭')
 })
 </script>
 
