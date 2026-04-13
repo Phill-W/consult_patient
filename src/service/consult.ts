@@ -9,7 +9,8 @@ import type {
   Image,
   ConsultOrderPreParams,
   ConsultOrderPreData,
-  PartialConsult
+  PartialConsult,
+  ConsultOrderItem
 } from '@/types/consult'
 export const getKnowledgePage = (params: KnowledgeParams) =>
   request<KnowledgePage>('/patient/home/knowledge', 'GET', params)
@@ -39,3 +40,6 @@ export const getConsultOrderPayUrl = (params: {
   orderId: string
   payCallback: string
 }) => request<{ payUrl: string }>('patient/consult/pay', 'POST', params)
+//订单数据
+export const getConsultOrderDetail = (orderId: string) =>
+  request<ConsultOrderItem>('/patient/consult/order/detail', 'GET', { orderId })

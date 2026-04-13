@@ -10,6 +10,14 @@ import { useRoute } from 'vue-router'
 import type { Message, TimeMessages } from '@/types/room'
 import { MsgType } from '@/enums'
 import { ref } from 'vue'
+import type { ConsultOrderItem } from '@/types/consult'
+import { getConsultOrderDetail } from '@/service/consult'
+
+const consult = ref<ConsultOrderItem>()
+const loadConsult = async () => {
+  const res = await getConsultOrderDetail(route.query.orderId as string)
+  consult.value = res.data
+}
 
 const store = useUserStore()
 const route = useRoute()
@@ -17,6 +25,7 @@ const list = ref<Message[]>([])
 
 let socket: Socket
 onMounted(() => {
+  loadConsult()
   // 建立链接，创建 socket.io 实例
   socket = io(baseURL, {
     auth: {
