@@ -29,6 +29,7 @@ const onSelect = (action: { text: string }, i: number) => {
   <div class="consult-more">
     <div class="more">
       <van-popover
+        placement="top-start"
         v-model:show="showPopover"
         :actions="actions"
         @select="onSelect"
