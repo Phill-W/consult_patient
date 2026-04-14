@@ -12,6 +12,8 @@ import { MsgType, OrderType } from '@/enums'
 import { ref, nextTick } from 'vue'
 import type { ConsultOrderItem, Image } from '@/types/consult'
 import { getConsultOrderDetail } from '@/service/consult'
+import dayjs from 'dayjs'
+import { showToast } from 'vant'
 
 const consult = ref<ConsultOrderItem>()
 const loadConsult = async () => {
@@ -22,6 +24,7 @@ const loadConsult = async () => {
 const store = useUserStore()
 const route = useRoute()
 const list = ref<Message[]>([])
+const initialMsg = ref(true)
 
 let socket: Socket
 onMounted(() => {
@@ -48,7 +51,9 @@ onMounted(() => {
   // 获取聊天记录，如果是第一次（默认消息）
   socket.on('chatMsgList', ({ data }: { data: TimeMessages[] }) => {
     const arr: Message[] = []
-    data.forEach((item) => {
+    data.forEach((item, i) => {
+      //记录每一段消息中最早的时间，获取聊天记录使用
+      if (i === 0) time.value = item.createTime
       arr.push({
         msgType: MsgType.Notify,
         msg: {
@@ -60,6 +65,16 @@ onMounted(() => {
       arr.push(...item.items)
     })
     list.value.unshift(...arr)
+
+    loading.value = false
+    if (!arr.length) return showToast('没有更多聊天记录了')
+
+    if (initialMsg.value) {
+      nextTick(() => {
+        window.scrollTo(0, document.body.scrollHeight)
+        initialMsg.value = false
+      })
+    }
   })
   //监听订单状态变换
   socket.on('statusChange', () => loadConsult())
@@ -92,6 +107,13 @@ const onSendImage = (image: Image) => {
     msg: { picture: image }
   })
 }
+
+//下拉刷新
+const loading = ref(false)
+const time = ref(dayjs().format('YYYY-MM-DD HH:mm:ss'))
+const onRefresh = () => {
+  socket.emit('getChatMsgList', 20, time.value, consult.value?.id)
+}
 </script>
 
 <template>
@@ -103,11 +125,13 @@ const onSendImage = (image: Image) => {
       :countdown="consult?.countdown"
     ></room-status>
     <!-- 消息 -->
-    <room-message
-      v-for="item in list"
-      :key="item.id"
-      :item="item"
-    ></room-message>
+    <van-pull-refresh v-model="loading" @refresh="onRefresh">
+      <room-message
+        v-for="item in list"
+        :key="item.id"
+        :item="item"
+      ></room-message>
+    </van-pull-refresh>
     <!-- 操作栏 -->
     <room-action
       @send-text="onsendText"

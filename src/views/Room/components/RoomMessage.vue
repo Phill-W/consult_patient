@@ -65,11 +65,14 @@ const formatTime = (time: string) => dayjs(time).format('HH:mm')
     </div>
   </div>
   <!-- 通知-结束 -->
-  <!-- <div class="msg msg-tip msg-tip-cancel">
+  <div
+    class="msg msg-tip msg-tip-cancel"
+    v-if="item.msgType === MsgType.NotifyCancel"
+  >
     <div class="content">
-      <span>订单取消</span>
+      <span>{{ item.msg.content }}</span>
     </div>
-  </div> -->
+  </div>
   <!-- 发送文字 -->
   <div
     class="msg msg-to"
