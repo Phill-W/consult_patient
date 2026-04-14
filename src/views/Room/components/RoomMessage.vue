@@ -7,7 +7,7 @@ import type { Image } from '@/types/consult'
 import { useUserStore } from '@/stores'
 import dayjs from 'dayjs'
 import { getPrescriptionPic } from '@/service/consult'
-
+import EvaluateCard from './EvaluateCard.vue'
 defineProps<{
   item: Message
 }>()
@@ -163,6 +163,14 @@ const showPrescription = async (id?: string) => {
     </div>
   </div>
   <!-- 评价卡片，后期实现 -->
+  <div
+    class="msg msg-comment"
+    v-if="
+      item.msgType === MsgType.CardEva || item.msgType === MsgType.CardEvaForm
+    "
+  >
+    <evaluate-card :evaluateDoc="item.msg.evaluateDoc"></evaluate-card>
+  </div>
 </template>
 
 <style lang="scss" scoped>
