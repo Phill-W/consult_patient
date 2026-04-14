@@ -1,8 +1,9 @@
 import { followOrUnfollow } from '@/service/consult'
 import { ref } from 'vue'
-import type { FollowType } from '@/types/consult'
-import { getPrescriptionPic } from '@/service/consult'
-import { showImagePreview } from 'vant'
+import type { FollowType, ConsultOrderItem } from '@/types/consult'
+import { getPrescriptionPic, cancelOrder } from '@/service/consult'
+import { showImagePreview, showSuccessToast, showFailToast } from 'vant'
+import { OrderType } from '@/enums'
 //vue3概念：组合式API，组合式函数（composable） useXxx
 //composable
 export const useFollow = (type: FollowType = 'doc') => {
@@ -28,4 +29,23 @@ export const useShowPrescription = () => {
     }
   }
   return { onShowPrescription }
+}
+
+// 封装取消订单逻辑
+export const useCancelOrder = () => {
+  const loading = ref(false)
+  const cancelConsultOrder = async (item: ConsultOrderItem) => {
+    try {
+      loading.value = true
+      await cancelOrder(item.id)
+      item.status = OrderType.ConsultCancel
+      item.statusValue = '已取消'
+      showSuccessToast('取消成功')
+    } catch {
+      showFailToast('取消失败')
+    } finally {
+      loading.value = false
+    }
+  }
+  return { loading, cancelConsultOrder }
 }
