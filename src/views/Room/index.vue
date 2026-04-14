@@ -3,7 +3,7 @@ import RoomStatus from './components/RoomStatus.vue'
 import RoomAction from './components/RoomAction.vue'
 import RoomMessage from './components/RoomMessage.vue'
 import io, { Socket } from 'socket.io-client'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, provide } from 'vue'
 import { baseURL } from '@/utils/request'
 import { useUserStore } from '@/stores'
 import { useRoute } from 'vue-router'
@@ -20,6 +20,16 @@ const loadConsult = async () => {
   const res = await getConsultOrderDetail(route.query.orderId as string)
   consult.value = res.data
 }
+//提供问诊订单数据给后代组件
+provide('consult', consult)
+const completeEva = (score: number) => {
+  const item = list.value.find((item) => item.msgType === MsgType.CardEvaForm)
+  if (item) {
+    item.msg.evaluateDoc = { score }
+    item.msgType = MsgType.CardEva
+  }
+}
+provide('completeEva', completeEva)
 
 const store = useUserStore()
 const route = useRoute()

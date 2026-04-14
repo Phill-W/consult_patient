@@ -1,19 +1,37 @@
 <script setup lang="ts">
+import { evaluateConsultOrder } from '@/service/consult'
+import type { ConsultOrderItem } from '@/types/consult'
 import type { EvaluateDoc } from '@/types/room'
 import { showToast } from 'vant'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
+import type { Ref } from 'vue'
 defineProps<{
   evaluateDoc?: EvaluateDoc
 }>()
+//注入问诊订单
+const consult = inject<Ref<ConsultOrderItem>>('consult')
 
 const score = ref(0)
 const content = ref('')
 const anonymousFlag = ref(false)
 const disabled = computed(() => !score.value || !content.value)
+const completeEva = inject<(score: number) => void>('completeEva')
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (!score.value) return showToast('请选择评分')
   if (!content.value) return showToast('请填写评价')
+  if (!consult?.value) return showToast('未找到订单')
+  // 提交评价信息
+  if (consult?.value.docInfo) {
+    await evaluateConsultOrder({
+      docId: consult?.value.docInfo?.id,
+      orderId: consult?.value.id,
+      score: score.value,
+      content: content.value,
+      anonymousFlag: anonymousFlag.value ? 1 : 0
+    })
+    completeEva?.(score.value)
+  }
 }
 </script>
 
