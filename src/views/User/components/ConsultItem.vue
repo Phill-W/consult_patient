@@ -1,27 +1,28 @@
 <script setup lang="ts">
 import type { ConsultOrderItem } from '@/types/consult'
 import { OrderType } from '@/enums'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { showSuccessToast, showFailToast } from 'vant'
 import { cancelOrder } from '@/service/consult'
 import { deleteOrder } from '@/service/consult'
 import { useShowPrescription } from '@/composables'
+import ConsultMore from './ConsultMore.vue'
 
-const props = defineProps<{ item: ConsultOrderItem }>()
+defineProps<{ item: ConsultOrderItem }>()
 
-const showPopover = ref(false)
-const actions = computed(() => [
-  { text: '查看处方 ', disabled: !props.item.prescriptionId },
-  { text: '删除订单' }
-])
-const onSelect = (action: { text: string }, i: number) => {
-  if (i === 0) {
-    onShowPrescription(props.item.id)
-  }
-  if (i === 1) {
-    deleteConsultOrder(props.item)
-  }
-}
+// const showPopover = ref(false)
+// const actions = computed(() => [
+//   { text: '查看处方 ', disabled: !props.item.prescriptionId },
+//   { text: '删除订单' }
+// ])
+// const onSelect = (action: { text: string }, i: number) => {
+//   if (i === 0) {
+//     onShowPrescription(props.item.id)
+//   }
+//   if (i === 1) {
+//     deleteConsultOrder(props.item)
+//   }
+// }
 //取消订单
 const loading = ref(false)
 const cancelConsultOrder = async (item: ConsultOrderItem) => {
@@ -150,15 +151,12 @@ const { onShowPrescription } = useShowPrescription()
       </van-button>
     </div>
     <div class="foot" v-if="item.status === OrderType.ConsultComplete">
-      <div class="more">
-        <van-popover
-          v-model:show="showPopover"
-          :actions="actions"
-          @select="onSelect"
-        >
-          <template #reference> 更多 </template>
-        </van-popover>
-      </div>
+      <!-- 更多组件 -->
+      <consult-more
+        :disabled="!item.prescriptionId"
+        @on-delete="deleteConsultOrder(item)"
+        @on-preview="onShowPrescription(item.prescriptionId)"
+      />
       <van-button
         class="gray"
         plain
