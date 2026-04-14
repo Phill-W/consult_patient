@@ -26,7 +26,7 @@ export const getAllDep = () => request<TopDep[]>('dep/all')
 export const uploadImage = (file: File) => {
   const fd = new FormData()
   fd.append('file', file)
-  return request<Image>('/upload', 'POST', fd)
+  return request<Image>('upload', 'POST', fd)
 }
 
 export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
