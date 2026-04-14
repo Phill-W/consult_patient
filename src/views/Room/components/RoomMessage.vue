@@ -6,8 +6,9 @@ import { showImagePreview, showToast } from 'vant'
 import type { Image } from '@/types/consult'
 import { useUserStore } from '@/stores'
 import dayjs from 'dayjs'
-import { getPrescriptionPic } from '@/service/consult'
 import EvaluateCard from './EvaluateCard.vue'
+import { useShowPrescription } from '@/composables'
+
 defineProps<{
   item: Message
 }>()
@@ -25,12 +26,8 @@ const onPreviewImage = (images?: Image[]) => {
 const store = useUserStore()
 const formatTime = (time: string) => dayjs(time).format('HH:mm')
 
-const showPrescription = async (id?: string) => {
-  if (id) {
-    const res = await getPrescriptionPic(id)
-    showImagePreview([res.data.url])
-  }
-}
+//查看处方
+const { onShowPrescription } = useShowPrescription()
 </script>
 
 <template>
@@ -132,7 +129,7 @@ const showPrescription = async (id?: string) => {
       <div class="head van-hairline--bottom">
         <div class="head-tit">
           <h3>电子处方</h3>
-          <p @click="showPrescription(item.msg.prescription?.id)">
+          <p @click="onShowPrescription(item.msg.prescription?.id)">
             原始处方 <van-icon name="arrow"></van-icon>
           </p>
         </div>
