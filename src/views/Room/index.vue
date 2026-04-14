@@ -70,6 +70,10 @@ onMounted(() => {
     if (!arr.length) return showToast('没有更多聊天记录了')
 
     if (initialMsg.value) {
+      const lastMsg = arr[arr.length - 1]
+      if (lastMsg) {
+        socket.emit('updateMsgStatus', lastMsg.id)
+      }
       nextTick(() => {
         window.scrollTo(0, document.body.scrollHeight)
         initialMsg.value = false
@@ -80,6 +84,7 @@ onMounted(() => {
   socket.on('statusChange', () => loadConsult())
   //接收聊天消息
   socket.on('receiveChatMsg', async (event) => {
+    socket.emit('updateMsgStatus', event.id)
     list.value.push(event)
     await nextTick()
     window.scrollTo(0, document.body.scrollHeight)
