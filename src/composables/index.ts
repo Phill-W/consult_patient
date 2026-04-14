@@ -1,7 +1,7 @@
 import { followOrUnfollow } from '@/service/consult'
 import { ref } from 'vue'
 import type { FollowType, ConsultOrderItem } from '@/types/consult'
-import { getPrescriptionPic, cancelOrder } from '@/service/consult'
+import { getPrescriptionPic, cancelOrder, deleteOrder } from '@/service/consult'
 import { showImagePreview, showSuccessToast, showFailToast } from 'vant'
 import { OrderType } from '@/enums'
 //vue3概念：组合式API，组合式函数（composable） useXxx
@@ -48,4 +48,24 @@ export const useCancelOrder = () => {
     }
   }
   return { loading, cancelConsultOrder }
+}
+
+export const useDeleteOrder = (cb: () => void) => {
+  // 删除订单
+  const loading = ref(false)
+  const deleteConsultOrder = async (item: ConsultOrderItem) => {
+    try {
+      loading.value = true
+      await deleteOrder(item.id)
+      showSuccessToast('删除成功')
+      // 成功，做其他业务
+      // oxlint-disable-next-line no-unused-expressions
+      cb && cb()
+    } catch {
+      showFailToast('删除失败')
+    } finally {
+      loading.value = false
+    }
+  }
+  return { loading, deleteConsultOrder }
 }
