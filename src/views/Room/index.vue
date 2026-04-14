@@ -9,7 +9,7 @@ import { useUserStore } from '@/stores'
 import { useRoute } from 'vue-router'
 import type { Message, TimeMessages } from '@/types/room'
 import { MsgType, OrderType } from '@/enums'
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import type { ConsultOrderItem } from '@/types/consult'
 import { getConsultOrderDetail } from '@/service/consult'
 
@@ -61,11 +61,28 @@ onMounted(() => {
     })
     list.value.unshift(...arr)
   })
+  //监听订单状态变换
+  socket.on('statusChange', () => loadConsult())
+  //接收聊天消息
+  socket.on('receiveChatMsg', async (event) => {
+    list.value.push(event)
+    await nextTick()
+    window.scrollTo(0, document.body.scrollHeight)
+  })
 })
 
 onUnmounted(() => {
   socket.close()
 })
+//发送文字信息
+const onsendText = (text: string) => {
+  socket.emit('sendChatMsg', {
+    from: store.user?.id,
+    to: consult.value?.docInfo?.id,
+    msgType: MsgType.MsgText,
+    msg: { content: text }
+  })
+}
 </script>
 
 <template>
@@ -84,6 +101,7 @@ onUnmounted(() => {
     ></room-message>
     <!-- 操作栏 -->
     <room-action
+      @send-text="onsendText"
       :disabled="consult?.status !== OrderType.ConsultChat"
     ></room-action>
   </div>
