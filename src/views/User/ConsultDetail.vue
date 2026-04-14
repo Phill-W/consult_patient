@@ -35,6 +35,7 @@ const onCopy = async () => {
   await copy(item.value?.orderNo || '')
   showToast('已复制')
 }
+const show = ref(false)
 </script>
 
 <template>
@@ -119,7 +120,9 @@ const onCopy = async () => {
         @click="cancelConsultOrder(item)"
         >取消问诊</van-button
       >
-      <van-button type="primary" round>继续支付</van-button>
+      <van-button type="primary" round @click="show = true"
+        >继续支付</van-button
+      >
     </div>
     <div
       class="detail-action van-hairline--top"
@@ -181,6 +184,12 @@ const onCopy = async () => {
       >
       <van-button type="primary" round :to="`/`">咨询其他医生</van-button>
     </div>
+    <!-- 支付抽屉 -->
+    <cp-pay-sheet
+      v-model:show="show"
+      :order-id="item.id"
+      :actual-payment="item.actualPayment"
+    ></cp-pay-sheet>
   </div>
   <div class="consult-detail-page" v-else>
     <cp-nav-bar title="问诊详情" />
