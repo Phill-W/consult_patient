@@ -1,9 +1,11 @@
 import { followOrUnfollow } from '@/service/consult'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FollowType, ConsultOrderItem } from '@/types/consult'
 import { getPrescriptionPic, cancelOrder, deleteOrder } from '@/service/consult'
 import { showImagePreview, showSuccessToast, showFailToast } from 'vant'
 import { OrderType } from '@/enums'
+import type { OrderDetail } from '@/types/order'
+import { getMedicalOrderDetail } from '@/service/order'
 //vue3概念：组合式API，组合式函数（composable） useXxx
 //composable
 export const useFollow = (type: FollowType = 'doc') => {
@@ -68,4 +70,19 @@ export const useDeleteOrder = (cb: () => void) => {
     }
   }
   return { loading, deleteConsultOrder }
+}
+
+export const useOrderDetail = (id: string) => {
+  const loading = ref(false)
+  const order = ref<OrderDetail>()
+  onMounted(async () => {
+    loading.value = true
+    try {
+      const res = await getMedicalOrderDetail(id)
+      order.value = res.data
+    } finally {
+      loading.value = false
+    }
+  })
+  return { order, loading }
 }
