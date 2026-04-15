@@ -1,15 +1,47 @@
 <script setup lang="ts">
 import { getMedicalOrderLogistics } from '@/service/order'
 import type { Logistics } from '@/types/order'
+import AMapLoader from '@amap/amap-jsapi-loader'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-// 获取物流信息
 const logistics = ref<Logistics>()
 const route = useRoute()
+
+window._AMapSecurityConfig = {
+  securityJsCode: '6a315a8420c3134f102cb77dd0a235cd'
+}
+
+const initMap = async () => {
+  try {
+    const AMap = await AMapLoader.load({
+      key: '1e3fd44ce0686b98085b58bedff6cc6d',
+      version: '2.0'
+    })
+
+    const center = logistics.value?.currentLocationInfo
+    const longitude = Number(center?.longitude || 114.0579)
+    const latitude = Number(center?.latitude || 22.5431)
+
+    const map = new AMap.Map('map', {
+      mapStyle: 'amap://styles/whitesmoke',
+      zoom: 12,
+      center: [longitude, latitude]
+    })
+
+    new AMap.Marker({
+      position: [longitude, latitude],
+      map
+    })
+  } catch (e) {
+    console.error('AMap load failed:', e)
+  }
+}
+
 onMounted(async () => {
   const res = await getMedicalOrderLogistics(route.params.id as string)
   logistics.value = res.data
+  await initMap()
 })
 </script>
 
@@ -85,7 +117,6 @@ onMounted(async () => {
     height: 80px;
     border-radius: 4px;
     background-color: #fff;
-    height: 80px;
     width: 355px;
     box-sizing: border-box;
     padding: 15px;

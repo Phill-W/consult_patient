@@ -72,7 +72,7 @@ const router = createRouter({
       meta: { title: '药品订单详情' }
     },
     {
-      path: '/order/logistics:id',
+      path: '/order/logistics/:id',
       component: () => import('@/views/Order/OrderLogistics.vue'),
       meta: { title: '物流详情' }
     },
@@ -106,7 +106,6 @@ const router = createRouter({
   ]
 })
 
-//全局的前置导航
 router.beforeEach((to) => {
   NProgress.start()
   const store = useUserStore()
@@ -114,9 +113,9 @@ router.beforeEach((to) => {
   if (!store.user?.token && !whiteList.includes(to.path)) return '/login'
 })
 
-//全局的后置导航
 router.afterEach((to) => {
   document.title = `${to.meta.title || ''}-优医问诊`
   NProgress.done()
 })
+
 export default router
