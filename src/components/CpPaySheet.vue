@@ -47,11 +47,7 @@ const pay = async () => {
             ><van-checkbox :checked="paymentMethod === 0"
           /></template>
         </van-cell>
-        <van-cell
-          title="支
-            付宝支付"
-          @click="paymentMethod = 1"
-        >
+        <van-cell title="支付宝支付" @click="paymentMethod = 1">
           <template #icon><cp-icon name="consult-alipay" /></template>
           <template #extra
             ><van-checkbox :checked="paymentMethod === 1"
