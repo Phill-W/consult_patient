@@ -13,29 +13,64 @@ window._AMapSecurityConfig = {
 }
 
 const initMap = async () => {
-  try {
-    const AMap = await AMapLoader.load({
-      key: '1e3fd44ce0686b98085b58bedff6cc6d',
-      version: '2.0'
-    })
-
-    const center = logistics.value?.currentLocationInfo
-    const longitude = Number(center?.longitude || 114.0579)
-    const latitude = Number(center?.latitude || 22.5431)
-
+  AMapLoader.load({
+    key: '1e3fd44ce0686b98085b58bedff6cc6d',
+    version: '2.0'
+  }).then((AMap) => {
+    // 使用 Amap 初始化地图
     const map = new AMap.Map('map', {
       mapStyle: 'amap://styles/whitesmoke',
-      zoom: 12,
-      center: [longitude, latitude]
+      zoom: 12
     })
+    AMap.plugin('AMap.Driving', function () {
+      const driving = new AMap.Driving({
+        map,
+        showTraffic: false,
+        hideMarkers: true
+      })
 
-    new AMap.Marker({
-      position: [longitude, latitude],
-      map
+      const list = [...(logistics.value?.logisticsInfo || [])]
+      if (list.length < 2) return
+
+      const start = list.shift()!
+      const end = list.pop()!
+
+      const startPoint: [number, number] = [
+        Number(start.longitude),
+        Number(start.latitude)
+      ]
+      const endPoint: [number, number] = [
+        Number(end.longitude),
+        Number(end.latitude)
+      ]
+
+      const startMarker = new AMap.Marker({
+        position: startPoint,
+        label: { content: '起点', direction: 'top' }
+      })
+
+      const endMarker = new AMap.Marker({
+        position: endPoint,
+        label: { content: '终点', direction: 'top' }
+      })
+
+      map.add([startMarker, endMarker])
+
+      driving.search(
+        startPoint,
+        endPoint,
+        {
+          waypoints: list.map((item) => [
+            Number(item.longitude),
+            Number(item.latitude)
+          ])
+        },
+        () => {
+          map.setFitView([startMarker, endMarker])
+        }
+      )
     })
-  } catch (e) {
-    console.error('AMap load failed:', e)
-  }
+  })
 }
 
 onMounted(async () => {

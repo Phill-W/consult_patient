@@ -28,27 +28,35 @@ const fallbackAddressList: AddressItem[] = [
 ]
 
 const fallbackLogistics: Logistics = {
-  estimatedTime: '2天后',
+  estimatedTime: '3天后',
   name: '顺丰速运',
-  awbNo: 'SF1234567890',
+  awbNo: 'SF9876543210',
   status: 3,
   statusValue: '运输中',
   currentLocationInfo: {
-    longitude: '114.0579',
-    latitude: '22.5431'
+    longitude: '116.4074',
+    latitude: '39.9042'
   },
   logisticsInfo: [
     {
-      longitude: '113.2644',
-      latitude: '23.1291'
-    },
-    {
-      longitude: '113.9304',
-      latitude: '22.5333'
-    },
-    {
       longitude: '114.0579',
       latitude: '22.5431'
+    },
+    {
+      longitude: '114.3055',
+      latitude: '30.5928'
+    },
+    {
+      longitude: '118.7969',
+      latitude: '32.0603'
+    },
+    {
+      longitude: '120.1551',
+      latitude: '30.2741'
+    },
+    {
+      longitude: '116.4074',
+      latitude: '39.9042'
     }
   ],
   list: [
@@ -61,15 +69,29 @@ const fallbackLogistics: Logistics = {
     },
     {
       id: 'log-2',
-      content: '包裹到达深圳南山转运中心',
-      createTime: '2026-04-15 12:35:00',
+      content: '包裹到达广州转运中心，正在分拣',
+      createTime: '2026-04-15 13:40:00',
       status: 3,
       statusValue: '运输中'
     },
     {
       id: 'log-3',
-      content: '快递员正在派送，请保持电话畅通',
-      createTime: '2026-04-15 18:20:00',
+      content: '包裹到达武汉中转中心，等待下一站发车',
+      createTime: '2026-04-16 09:25:00',
+      status: 3,
+      statusValue: '运输中'
+    },
+    {
+      id: 'log-4',
+      content: '包裹到达南京转运中心，即将发往北京',
+      createTime: '2026-04-16 19:18:00',
+      status: 3,
+      statusValue: '运输中'
+    },
+    {
+      id: 'log-5',
+      content: '快递员正在北京派送，请保持电话畅通',
+      createTime: '2026-04-17 08:20:00',
       status: 4,
       statusValue: '派送中'
     }
