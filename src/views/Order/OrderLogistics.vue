@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { getMedicalOrderLogistics } from '@/service/order'
-import type { Logistics } from '@/types/order'
+import type { Logistics, Location } from '@/types/order'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
+import startImage from '@/assets/start.png'
+import endImg from '@/assets/end.png'
+import carImg from '@/assets/car.png'
 const logistics = ref<Logistics>()
 const route = useRoute()
 
@@ -24,51 +26,60 @@ const initMap = async () => {
     })
     AMap.plugin('AMap.Driving', function () {
       const driving = new AMap.Driving({
-        map,
+        map: map,
         showTraffic: false,
         hideMarkers: true
       })
 
-      const list = [...(logistics.value?.logisticsInfo || [])]
-      if (list.length < 2) return
-
-      const start = list.shift()!
-      const end = list.pop()!
-
-      const startPoint: [number, number] = [
-        Number(start.longitude),
-        Number(start.latitude)
-      ]
-      const endPoint: [number, number] = [
-        Number(end.longitude),
-        Number(end.latitude)
-      ]
-
-      const startMarker = new AMap.Marker({
-        position: startPoint,
-        label: { content: '起点', direction: 'top' }
-      })
-
-      const endMarker = new AMap.Marker({
-        position: endPoint,
-        label: { content: '终点', direction: 'top' }
-      })
-
-      map.add([startMarker, endMarker])
-
-      driving.search(
-        startPoint,
-        endPoint,
-        {
-          waypoints: list.map((item) => [
-            Number(item.longitude),
-            Number(item.latitude)
-          ])
-        },
-        () => {
-          map.setFitView([startMarker, endMarker])
+      if (
+        logistics.value?.logisticsInfo &&
+        logistics.value.logisticsInfo.length >= 2
+      ) {
+        const list = [...logistics.value.logisticsInfo]
+        //标记函数
+        const getMarker = (
+          point: Location,
+          image: string,
+          width = 25,
+          height = 30
+        ) => {
+          const icon = new AMap.Icon({
+            size: new AMap.Size(width, height),
+            image,
+            imageSize: new AMap.Size(width, height)
+          })
+          const marker = new AMap.Marker({
+            position: [point?.longitude, point?.latitude],
+            icon: icon,
+            offset: new AMap.Pixel(-width / 2, -height)
+          })
+          return marker
         }
-      )
+        // 起点
+        const start = list.shift()
+        const startMarker = getMarker(start!, startImage)
+        map.add(startMarker)
+        // 终点
+        const end = list.pop()
+        const endMarker = getMarker(end!, endImg)
+        map.add(endMarker)
+        driving.search(
+          [start?.longitude, start?.latitude],
+          [end?.longitude, end?.latitude],
+          { waypoints: list.map((item) => [item.longitude, item.latitude]) },
+          () => {
+            // 规划完毕
+            const curr = logistics.value?.currentLocationInfo
+            const currMarker = getMarker(curr!, carImg, 33, 20)
+            map.add(currMarker)
+            // 3s后定位当中间进行缩放
+            setTimeout(() => {
+              map.setFitView([currMarker])
+              map.setZoom(10)
+            }, 3000)
+          }
+        )
+      }
     })
   })
 }

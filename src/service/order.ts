@@ -34,8 +34,8 @@ const fallbackLogistics: Logistics = {
   status: 3,
   statusValue: '运输中',
   currentLocationInfo: {
-    longitude: '116.4074',
-    latitude: '39.9042'
+    longitude: '118.7969',
+    latitude: '32.0603'
   },
   logisticsInfo: [
     {
@@ -65,6 +65,7 @@ const fallbackLogistics: Logistics = {
       content: '包裹已从深圳分拨中心发出',
       createTime: '2026-04-15 09:12:00',
       status: 1,
+
       statusValue: '已发货'
     },
     {

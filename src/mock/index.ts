@@ -7,8 +7,8 @@ const logisticsData = {
   status: 3,
   statusValue: '运输中',
   currentLocationInfo: {
-    longitude: '116.4074',
-    latitude: '39.9042'
+    longitude: '118.7969',
+    latitude: '32.0603'
   },
   logisticsInfo: [
     {
