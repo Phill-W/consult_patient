@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { getAddressList, getMedicalOrderPre } from '@/service/order'
+import {
+  createMedicalOrder,
+  getAddressList,
+  getMedicalOrderPre
+} from '@/service/order'
 import type { AddressItem, OrderPre } from '@/types/order'
+import { showToast } from 'vant'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import OrderMedical from './components/OrderMedical.vue'
 
 const route = useRoute()
 // 预支付信息
@@ -30,6 +36,38 @@ onMounted(() => {
   loadAddress()
   loadOrderPre()
 })
+
+// 创建订单
+const agree = ref(false)
+const loading = ref(false)
+const orderId = ref('')
+const show = ref(false)
+const onSubmit = async () => {
+  if (!agree.value) return showToast('请勾选用户协议')
+  if (!address.value?.id) return showToast('请选择收货地址')
+  if (!orderPre.value?.id) return showToast('未找到处方')
+
+  if (!orderId.value) {
+    try {
+      loading.value = true
+      const res = await createMedicalOrder({
+        id: orderPre.value.id,
+        addressId: address.value.id,
+        couponId: orderPre.value.couponId
+      })
+      orderId.value = res.data.id
+      loading.value = false
+
+      // 打开抽屉
+      show.value = true
+    } catch {
+      loading.value = false
+    }
+  } else {
+    // 打开抽屉
+    show.value = true
+  }
+}
 </script>
 
 <template>
@@ -43,34 +81,11 @@ onMounted(() => {
       <p class="detail">{{ address.addressDetail }}</p>
       <p>
         {{ address.receiver }}
-        {{ address.mobile.replace(/^(\d{3})\d+(\d{4})$/, '\$1****\$2') }}
+        {{ address.mobile.replace(/^(\d{3})\d+(\d{4})$/, '$1****$2') }}
       </p>
     </div>
-    <div class="order-medical">
-      <div class="head">
-        <h3>优医药房</h3>
-        <small>优医质保 假一赔十</small>
-      </div>
-      <div
-        class="item van-hairline--top"
-        v-for="med in orderPre.medicines"
-        :key="med.id"
-      >
-        <img class="img" :src="med.avatar" alt="" />
-        <div class="info">
-          <p class="name">
-            <span>{{ med.name }}</span>
-            <span>x{{ med.quantity }}</span>
-          </p>
-          <p class="size">
-            <van-tag v-if="med.prescriptionFlag === 1">处方药</van-tag>
-            <span>{{ med.specs }}</span>
-          </p>
-          <p class="price">￥{{ med.amount }}</p>
-        </div>
-        <div class="desc">{{ med.usageDosag }}</div>
-      </div>
-    </div>
+    <!-- 药品清单组件 -->
+    <order-medical :medicines="orderPre.medicines"></order-medical>
     <div class="order-detail">
       <van-cell-group>
         <van-cell title="药品金额" :value="`￥${orderPre.payment}`" />
@@ -88,20 +103,31 @@ onMounted(() => {
         由于药品的特殊性，如非错发、漏发药品的情况，药品一经发出
         不得退换，请核对药品信息无误后下单。
       </p>
-      <van-checkbox>我已同意<a href="javascript:;">支付协议</a></van-checkbox>
+      <van-checkbox v-model="agree">
+        我已同意<a href="javascript:;">支付协议</a>
+      </van-checkbox>
     </div>
     <van-submit-bar
       :price="orderPre.actualPayment * 100"
       button-text="立即支付"
       button-type="primary"
       text-align="left"
+      @click="onSubmit"
+      :loading="loading"
     ></van-submit-bar>
+    <!-- 支付抽屉 -->
+    <cp-pay-sheet
+      v-model:show="show"
+      :order-id="orderId"
+      :actual-payment="orderPre.actualPayment"
+      pay-callback="/order/pay/result"
+    ></cp-pay-sheet>
   </div>
   <div class="order-pay-page" v-else>
     <cp-nav-bar title="药品支付" />
-    <van-skeleton title avatar row="2" style="margin-top: 15px" />
-    <van-skeleton title row="4" style="margin-top: 50px" />
-    <van-skeleton title row="4" style="margin-top: 50px" />
+    <van-skeleton title avatar row="2" style="margin-top: 15px"></van-skeleton>
+    <van-skeleton title row="4" style="margin-top: 50px"></van-skeleton>
+    <van-skeleton title row="4" style="margin-top: 50px"></van-skeleton>
   </div>
 </template>
 
@@ -162,75 +188,6 @@ onMounted(() => {
   }
 }
 
-.order-medical {
-  background-color: #fff;
-  padding: 0 15px;
-  .head {
-    display: flex;
-    height: 54px;
-    align-items: center;
-    > h3 {
-      font-size: 16px;
-      font-weight: normal;
-    }
-    > small {
-      font-size: 13px;
-      color: var(--cp-tag);
-      margin-left: 10px;
-    }
-  }
-  .item {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 15px 0;
-    .img {
-      width: 80px;
-      height: 70px;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .info {
-      padding-left: 15px;
-      width: 250px;
-      .name {
-        display: flex;
-        font-size: 15px;
-        margin-bottom: 5px;
-        > span:first-child {
-          width: 200px;
-        }
-        > span:last-child {
-          width: 50px;
-          text-align: right;
-        }
-      }
-      .size {
-        margin-bottom: 5px;
-        .van-tag {
-          background-color: var(--cp-primary);
-          vertical-align: middle;
-        }
-        span:not(.van-tag) {
-          margin-left: 10px;
-          color: var(--cp-tag);
-          vertical-align: middle;
-        }
-      }
-      .price {
-        font-size: 16px;
-        color: #eb5757;
-      }
-    }
-    .desc {
-      width: 100%;
-      background-color: var(--cp-bg);
-      border-radius: 4px;
-      margin-top: 10px;
-      padding: 4px 10px;
-      color: var(--cp-tip);
-    }
-  }
-}
 .order-tip {
   padding: 0 15px;
   display: flex;
