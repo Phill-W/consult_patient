@@ -13,9 +13,16 @@ import { VantResolver } from 'unplugin-vue-components/resolvers'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
 
+import { viteMockServe } from 'vite-plugin-mock'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    viteMockServe({
+      // 在哪个文件夹下编写模拟接口的代码
+      mockPath: './src/mock',
+      // 在开发环境开启mock
+      enable: true
+    }),
     vue(),
     vueDevTools(),
     //样式重复引入问题：当使用组件自动注册插件时，可能会导致样式被重复引入。为了解决这个问题，可以在组件库的解析器中添加一个选项来避免重复引入样式。

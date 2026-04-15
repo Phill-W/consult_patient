@@ -2,7 +2,8 @@ import type {
   AddAddress,
   AddressItem,
   OrderDetail,
-  OrderPre
+  OrderPre,
+  Logistics
 } from '@/types/order'
 import { request } from '@/utils/request'
 import { showToast } from 'vant'
@@ -56,3 +57,7 @@ export const createMedicalOrder = (data: {
 // 获取药品订单详情
 export const getMedicalOrderDetail = (id: string) =>
   request<OrderDetail>(`/patient/medicine/order/detail/${id}`)
+
+// 获取药品订单物流信息
+export const getMedicalOrderLogistics = (id: string) =>
+  request<Logistics>(`/patient/order/${id}/logistics`)
